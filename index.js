@@ -107,8 +107,6 @@ app.post('/user/register', function (req, res) {
   });
 });
 
-
-
 app.post('/user/login', function (req, res) {
   // Try to find this user by email
   Users.findOne({email: req.body.email}, function(err, user){
@@ -153,6 +151,43 @@ app.post('/task/create', function(req, res){
       res.send('Error saving task!');
     }else{
       res.redirect('/');
+    }
+  });
+});
+
+// Handle completion of tasks
+app.post('/task/complete', function(req, res){
+  Tasks.findById(req.body.id, function(err, task){
+    if(err || !task){
+      res.send("Error. Task does not exist.");
+    }else{
+      task.isComplete=!task.isComplete;
+      task.save(function(err, savedTask){
+        if(err || !savedTask){
+          res.send('Error completing task!');
+        }else{
+          res.redirect('/');
+        }
+      });
+    }
+  });
+});
+
+// Handle deletion of tasks
+app.post('/task/delete', function(req, res){
+  Tasks.findById(req.body.id, function(err, task){
+    if(err || !task){
+      res.send("Error. Task does not exist.");
+    }else{
+      task.owner=null;
+      task.collaborators=[null, null, null];
+      task.save(function(err, savedTask){
+        if(err || !savedTask){
+          res.send('Error completing task!');
+        }else{
+          res.redirect('/');
+        }
+      });
     }
   });
 });
